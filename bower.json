@@ -1,0 +1,23 @@
+{
+  "name": "Staades SDK JS",
+  "version": "2.0.0",
+  "authors": [
+    "Matthias Lill <matthias@staades.net>"
+  ],
+  "description": "Staades.net JavaScript SDK",
+  "homepage": "http://www.staades.net",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "node_modules",
+    "docs",
+    "src",
+    "test",
+    "gulpfile.js",
+    ".npmignore",
+    "*.json",
+    "*.md",
+    "*.yml"
+  ]
+}

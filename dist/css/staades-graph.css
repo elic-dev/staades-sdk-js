@@ -1,0 +1,29 @@
+/**
+ * Staades SDK JS 2.0 Graph Sass
+ */
+.staades-graph-container .staades-graph-btns {
+  position: relative;
+  z-index: 100;
+  height: 24px;
+  margin-left: 40px;
+  margin-right: 5px; }
+  .staades-graph-container .staades-graph-btns .staades-active {
+    background-color: #cdcdcd; }
+
+.staades-graph-container .staades-graph-range-btn,
+.staades-graph-container .staades-graph-diff-btn {
+  background-color: #efefef;
+  height: 24px;
+  padding: 1px 3px;
+  margin-right: 1px;
+  font-size: 0.9em;
+  cursor: pointer; }
+
+.staades-graph-container .staades-graph-range-btns {
+  float: left; }
+
+.staades-graph-container .staades-graph-diff-btns {
+  float: right; }
+
+.staades-graph-container .staades-graph-error {
+  color: red; }
