@@ -15,8 +15,8 @@ var paths = {
         'sass': './src/sass/'
     },
     'dist': {
-        'js': './dist/js/',
-        'css': './dist/css/'
+        'js': './dist/',
+        'css': './dist/'
     }
 };
 

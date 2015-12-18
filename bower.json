@@ -5,8 +5,7 @@
     "Matthias Lill <matthias@staades.net>"
   ],
   "description": "Staades.net JavaScript SDK",
-  "homepage": "http://www.staades.net",
-  "private": true,
+  "homepage": "https://staades.net",
   "ignore": [
     "**/.*",
     "bower_components",

@@ -31,11 +31,11 @@ var StaadesGraph = function(appKey, apiKey, options) {
 	this.values();
 };
 
-StaadesGraph.prototype.errorResult = function(result) {
+StaadesGraph.prototype.errorResult = function(errorCode, result) {
 
 	if (result.message !== undefined) {
 		var element = document.getElementById(this.options.containerId);
-		element.insertAdjacentHTML('beforeend','<span class="staades-graph-error">'+result.message+'</span>');
+		element.insertAdjacentHTML('beforeend','<span class="staades-graph-error">Response code: '+errorCode+', '+result.message+'</span>');
 	}
 }
 
@@ -50,7 +50,7 @@ StaadesGraph.prototype.values = function() {
 
 	var range        = localStorage.getItem('staades'+this.containerHash+'range');
 	if (range == null) {
-		range = '5y';
+		range = '1m';
 	}
 	var display        = localStorage.getItem('staades'+this.containerHash+'display');
 	if (display == null) {
@@ -58,15 +58,15 @@ StaadesGraph.prototype.values = function() {
 	}
 
 	// active buttons
-	var buttonElements = document.getElementById(this.options.containerId).getElementsByClassName("staades-graph-range-btn");
-	for (var i=0; i<buttonElements.length;i++) {
-		 if (buttonElements[i].getAttribute('data-range') == range) {
-		 	buttonElements[i].setAttribute("class", "staades-graph-range-btn staades-active");
-		 } else {
-		 	buttonElements[i].setAttribute("class", "staades-graph-range-btn");
-		 }
-	}
-	buttonElements = document.getElementById(this.options.containerId).getElementsByClassName("staades-graph-diff-btn");
+	// var buttonElements = document.getElementById(this.options.containerId).getElementsByClassName("staades-graph-range-btn");
+	// for (var i=0; i<buttonElements.length;i++) {
+	// 	 if (buttonElements[i].getAttribute('data-range') == range) {
+	// 	 	buttonElements[i].setAttribute("class", "staades-graph-range-btn staades-active");
+	// 	 } else {
+	// 	 	buttonElements[i].setAttribute("class", "staades-graph-range-btn staades-invisible");
+	// 	 }
+	// }
+	var buttonElements = document.getElementById(this.options.containerId).getElementsByClassName("staades-graph-diff-btn");
 	for (var i=0; i<buttonElements.length;i++) {
 		 if (buttonElements[i].getAttribute('data-diff') == display) {
 		 	buttonElements[i].setAttribute("class", "staades-graph-diff-btn staades-active");
@@ -75,17 +75,81 @@ StaadesGraph.prototype.values = function() {
 		 }
 	}
 
-
-
 	if (this.options.idents) {
 		for (var row in this.options.idents) {
-			this.request.call(this,'/idents/'+this.options.idents[row]+'/values?filter[range]='+range);
+			this.request.call(this,'/idents/'+this.options.idents[row]+'/aggregate/'+display+'?filter[range]='+range);
 		}
 	}
 
 }
 
 StaadesGraph.prototype.valuesResult = function(values) {
+
+	// disable range buttons which can not be used
+	// console.log(values.links.range5y);
+
+	var range        = localStorage.getItem('staades'+this.containerHash+'range');
+	if (range == null) {
+		range = '1m';
+	}
+
+	var buttonElements = document.getElementById(this.options.containerId).getElementsByClassName("staades-graph-range-btn");
+	for (var i=0; i<buttonElements.length;i++) {
+
+		/**
+		 * This is a proof of concept. The duplicated and weird code will be improved soon.
+		 */
+		if (buttonElements[i].getAttribute('data-range') == "1h") {
+			if (values.links.range1h === undefined) {
+				buttonElements[i].setAttribute("class", "staades-graph-range-btn staades-invisible");
+			} else if (buttonElements[i].getAttribute('data-range') == range) {
+				buttonElements[i].setAttribute("class", "staades-graph-range-btn staades-active");
+			} else {
+				buttonElements[i].setAttribute("class", "staades-graph-range-btn");
+			}
+		}
+
+		if (buttonElements[i].getAttribute('data-range') == "1d") {
+			if (values.links.range1d === undefined) {
+				buttonElements[i].setAttribute("class", "staades-graph-range-btn staades-invisible");
+			} else if (buttonElements[i].getAttribute('data-range') == range) {
+				buttonElements[i].setAttribute("class", "staades-graph-range-btn staades-active");
+			} else {
+				buttonElements[i].setAttribute("class", "staades-graph-range-btn");
+			}
+		}
+
+		if (buttonElements[i].getAttribute('data-range') == "1m") {
+			if (values.links.range1m === undefined) {
+				buttonElements[i].setAttribute("class", "staades-graph-range-btn staades-invisible");
+			} else if (buttonElements[i].getAttribute('data-range') == range) {
+				buttonElements[i].setAttribute("class", "staades-graph-range-btn staades-active");
+			} else {
+				buttonElements[i].setAttribute("class", "staades-graph-range-btn");
+			}
+		}
+
+
+		if (buttonElements[i].getAttribute('data-range') == "1y") {
+			if (values.links.range1y === undefined) {
+				buttonElements[i].setAttribute("class", "staades-graph-range-btn staades-invisible");
+			} else if (buttonElements[i].getAttribute('data-range') == range) {
+				buttonElements[i].setAttribute("class", "staades-graph-range-btn staades-active");
+			} else {
+				buttonElements[i].setAttribute("class", "staades-graph-range-btn");
+			}
+		}
+
+		if (buttonElements[i].getAttribute('data-range') == "5y") {
+			if (values.links.range5y === undefined) {
+				buttonElements[i].setAttribute("class", "staades-graph-range-btn staades-invisible");
+			} else if (buttonElements[i].getAttribute('data-range') == range) {
+				buttonElements[i].setAttribute("class", "staades-graph-range-btn staades-active");
+			} else {
+				buttonElements[i].setAttribute("class", "staades-graph-range-btn");
+			}
+		}
+	}
 
 	if (this.options.layout == 'highchart') {
 		this.drawHighcartLineGraph(values);
@@ -105,9 +169,9 @@ StaadesGraph.prototype.initGraphContainer = function() {
 	// buttons
 	innerHTML += '<div class="staades-graph-btns">';
 	// range buttons
-	innerHTML += '<div class="staades-graph-range-btns"><span class="staades-graph-range-btn" data-range="5y">5Y</span><span class="staades-graph-range-btn" data-range="1y">1Y</span><span class="staades-graph-range-btn" data-range="1m">1M</span><span class="staades-graph-range-btn" data-range="1d">1D</span><span class="staades-graph-range-btn" data-range="1h">1H</span></div>';
+	innerHTML += '<div class="staades-graph-range-btns"><span class="staades-graph-range-btn staades-invisible" data-range="5y">5Y</span><span class="staades-graph-range-btn staades-invisible" data-range="1y">1Y</span><span class="staades-graph-range-btn" data-range="1m">1M</span><span class="staades-graph-range-btn" data-range="1d">1D</span><span class="staades-graph-range-btn" data-range="1h">1H</span></div>';
 	// diff/sum/avg buttons
-	innerHTML += '<div class="staades-graph-diff-btns"><span class="staades-graph-diff-btn" data-diff="sum">Sum</span><span class="staades-graph-diff-btn" data-diff="diff">Diff</span>  </div>';
+	innerHTML += '<div class="staades-graph-diff-btns"><span class="staades-graph-diff-btn staades-visible" data-diff="sum">&sum;</span><span class="staades-graph-diff-btn staades-visible" data-diff="diff">&Delta;</span>  </div>';
 
 	innerHTML += ' </div>'; // staades-grpah-btns
 
@@ -224,6 +288,49 @@ StaadesGraph.prototype.mapHighchartValues = function(values) {
 
 }
 
+
+StaadesGraph.prototype.mapHighchartAggregateValues = function(values) {
+
+	var serieData = [];
+
+	for (var row in values.aggregates) {
+
+		// @todo Atom datetime to JS date 
+		var datestr = values.aggregates[row].date;
+
+		var yy   = datestr.substring(0,4);
+		var mo   = datestr.substring(5,7);
+		var dd   = datestr.substring(8,10);
+		var hh   = datestr.substring(11,13);
+		var mi   = datestr.substring(14,16);
+		var ss   = datestr.substring(17,19);
+		// var tzs  = datestr.substring(19,20);
+		// var tzhh = datestr.substring(20,22);
+		// var tzmi = datestr.substring(23,25);
+
+		serieData.push([
+			Date.UTC(yy-0,mo-1,dd-0,hh-0,mi-0,ss-0),
+			values.aggregates[row].value
+		]);
+	}
+
+
+	serieData.sort(function (a,b) {
+		if (a[0] > b[0]) return 1;
+		if (a[0] < b[0]) return -1;
+		return 0;
+	});
+
+	return {
+		name: values.data.attributes.title,
+		data: serieData,
+		animation: false,
+		marker: { radius: 2 }
+	};
+
+}
+
+
 StaadesGraph.prototype.initHighcartLineGraph = function(values) {
 	
 	// console.log('init graphObject');
@@ -277,9 +384,7 @@ StaadesGraph.prototype.initHighcartLineGraph = function(values) {
 StaadesGraph.prototype.drawHighcartLineGraph = function(values) {
 	
 	// console.log('draw data');
-
-	this.graphObject.addSeries(this.mapHighchartValues(values), false);
-
+	this.graphObject.addSeries(this.mapHighchartAggregateValues(values), false);
 	this.graphObject.redraw();
 
 }

@@ -7,7 +7,8 @@ var StaadesRequest = function() {
 }
 
 StaadesRequest.prototype.baseUrl = function(staadesObject) {
-	return "http://api.staades.net/2.0/app/"+staadesObject.appKey;
+	// return "http://api.staades2.net/2.0/app/"+staadesObject.appKey;
+	return "https://api.staades.net/2.0/app/"+staadesObject.appKey;
 }
 
 StaadesRequest.prototype.hash = function(string) {
@@ -40,9 +41,9 @@ StaadesRequest.prototype.call = function(staadesObject, action, callback) {
 		}
 
 		// handle errors
-		if (xhttp.readyState == 4 && xhttp.status == 400) {
+		if (xhttp.readyState == 4 && xhttp.status != 200) {
 			responseObject = JSON.parse(xhttp.responseText);
-			staadesObject.errorResult(responseObject);
+			staadesObject.errorResult(xhttp.status, responseObject);
 		}
 	};
 
